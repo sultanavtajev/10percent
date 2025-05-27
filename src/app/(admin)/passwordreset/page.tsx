@@ -16,17 +16,15 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "PASSWORD_RECOVERY") {
-          setRecovery(true); // 🔥 Tillat nytt passord
-        } else if (session) {
-          router.push("/"); // 🔒 Ikke recovery, redirect
-        }
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setRecovery(true);
+      } else if (session) {
+        router.push("/");
       }
-    );
+    });
 
-    return () => subscription?.unsubscribe();
+    return () => data?.subscription?.unsubscribe(); // 🔥 Løsningen
   }, [router]);
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
