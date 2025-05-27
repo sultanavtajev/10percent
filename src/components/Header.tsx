@@ -18,6 +18,8 @@ import {
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+
 
   useEffect(() => {
     const getUser = async () => {
@@ -59,7 +61,7 @@ export default function Header() {
         <span className="text-lg font-semibold">PERCENT</span>
       </Link>
       <div className="ml-auto flex items-center gap-4 sm:gap-6">
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -70,7 +72,7 @@ export default function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsOpen(false)}>
               <Link
                 href="/"
                 className="text-sm font-medium hover:underline underline-offset-4"
@@ -81,7 +83,7 @@ export default function Header() {
             </DropdownMenuItem>
             {user ? (
               <>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsOpen(false)}>
                   <Link
                     href="/leaderboard"
                     className="text-sm font-medium hover:underline underline-offset-4"
@@ -90,7 +92,7 @@ export default function Header() {
                     Oversikt
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsOpen(false)}>
                   <Link
                     href="/add"
                     className="text-sm font-medium hover:underline underline-offset-4"
@@ -99,7 +101,7 @@ export default function Header() {
                     Legg til
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsOpen(false)}>
                   <Link
                     href="/profile"
                     className="text-sm font-medium hover:underline underline-offset-4"
@@ -108,7 +110,12 @@ export default function Header() {
                     Profil
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={handleSignOut}>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    handleSignOut();
+                    setIsOpen(false);
+                  }}
+                >
                   <span className="text-sm font-medium hover:underline underline-offset-4 cursor-pointer">
                     Logg ut
                   </span>
@@ -116,7 +123,7 @@ export default function Header() {
               </>
             ) : (
               <>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsOpen(false)}>
                   <Link
                     href="/login"
                     className="text-sm font-medium hover:underline underline-offset-4"
@@ -125,7 +132,7 @@ export default function Header() {
                     Logg inn
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsOpen(false)}>
                   <Link
                     href="/register"
                     className="text-sm font-medium hover:underline underline-offset-4"
