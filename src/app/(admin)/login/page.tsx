@@ -43,7 +43,7 @@ export default function LoginPage() {
       if (profileError || !profileData) {
         router.push("/profile");
       } else {
-        router.push("/");
+        router.push("/leaderboard");
       }
     }
 
