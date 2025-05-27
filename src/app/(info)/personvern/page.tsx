@@ -112,7 +112,7 @@ export default function Komponent() {
   );
 }
 
-function CheckIcon(props) {
+function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

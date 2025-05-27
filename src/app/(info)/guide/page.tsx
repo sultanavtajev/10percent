@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 export default function Komponent() {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20">
@@ -98,7 +96,7 @@ export default function Komponent() {
   );
 }
 
-function CheckIcon(props) {
+function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -117,7 +115,7 @@ function CheckIcon(props) {
   );
 }
 
-function DownloadIcon(props) {
+function DownloadIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -138,7 +136,7 @@ function DownloadIcon(props) {
   );
 }
 
-function FlagIcon(props) {
+function FlagIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -158,7 +156,7 @@ function FlagIcon(props) {
   );
 }
 
-function ScanIcon(props) {
+function ScanIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -180,7 +178,7 @@ function ScanIcon(props) {
   );
 }
 
-function UploadIcon(props) {
+function UploadIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
