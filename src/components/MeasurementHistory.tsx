@@ -66,7 +66,7 @@ const measurementFields: MeasurementField[] = [
   { key: "hip", label: "Hofte", unit: "cm", color: "hsl(var(--chart-1))" },
   {
     key: "midaxillary",
-    label: "Midaxillary",
+    label: "Midtaksillær",
     unit: "mm",
     color: "hsl(var(--chart-2))",
   },
@@ -78,7 +78,7 @@ const measurementFields: MeasurementField[] = [
   },
   {
     key: "scapular",
-    label: "Scapular",
+    label: "Skulderblad",
     unit: "mm",
     color: "hsl(var(--chart-4))",
   },
@@ -121,7 +121,7 @@ const measurementFields: MeasurementField[] = [
   },
   {
     key: "organer",
-    label: "Organer",
+    label: "Organmasse",
     unit: "kg",
     color: "hsl(var(--chart-5))",
   },
