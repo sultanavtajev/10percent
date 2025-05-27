@@ -12,18 +12,21 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [recovery, setRecovery] = useState(false); // 🔥 Legg til recovery-status
   const router = useRouter();
 
   useEffect(() => {
-    // Sjekk om brukeren er inne i reset-passord flow
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        // Brukeren kan sette nytt passord her
-      } else if (session) {
-        // Hvis session eksisterer (f.eks. etter nytt passord), redirect til profil eller forsiden
-        router.push("/");
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "PASSWORD_RECOVERY") {
+          setRecovery(true); // 🔥 Tillat nytt passord
+        } else if (session) {
+          router.push("/"); // 🔒 Ikke recovery, redirect
+        }
       }
-    });
+    );
+
+    return () => subscription?.unsubscribe();
   }, [router]);
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -39,12 +42,21 @@ export default function ResetPasswordPage() {
     } else {
       setMessage("Passordet er oppdatert. Du vil bli logget inn automatisk.");
       setTimeout(() => {
-        router.push("/");
+        router.push("/"); // Eller router.push("/login") hvis ønskelig
       }, 3000);
     }
 
     setLoading(false);
   };
+
+  if (!recovery) {
+    // 🔒 Ikke recovery – vis loading eller redirecter
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Laster...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-md space-y-6 py-12">
