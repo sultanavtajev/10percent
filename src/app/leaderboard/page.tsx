@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import LeaderboardList from "@/components/LeaderboardList";
+import LeaderboardList from "@/components/OverviewList";
 import type { User } from "@supabase/supabase-js";
 
 export default function LeaderboardPage() {
@@ -39,15 +39,6 @@ export default function LeaderboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Siste registreringer
-        </h1>
-        <p className="text-lg text-gray-600">
-          Se hvordan andre ligger an med fettprosent
-        </p>
-      </div>
-
       <LeaderboardList />
     </div>
   );

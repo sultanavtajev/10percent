@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -23,7 +22,6 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,33 +40,12 @@ export default function RegisterPage() {
     if (error) {
       setError(error.message);
     } else {
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      // Suksess! Send brukeren til /profile for å fylle ut profilen
+      router.push("/login");
     }
 
     setLoading(false);
   };
-
-  if (success) {
-    return (
-      <div className="max-w-md mx-auto py-16 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-green-600 mb-4">
-                Registrering vellykket!
-              </h2>
-              <p className="text-gray-600">
-                Du blir omdirigert til innloggingssiden...
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-md mx-auto py-16 px-4">
@@ -91,7 +68,6 @@ export default function RegisterPage() {
                 required
               />
             </div>
-
             <div>
               <Label htmlFor="password">Passord</Label>
               <Input
@@ -103,7 +79,6 @@ export default function RegisterPage() {
                 minLength={6}
               />
             </div>
-
             <div>
               <Label htmlFor="confirmPassword">Bekreft passord</Label>
               <Input
@@ -115,14 +90,11 @@ export default function RegisterPage() {
                 minLength={6}
               />
             </div>
-
             {error && <div className="text-red-600 text-sm">{error}</div>}
-
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Registrerer..." : "Registrer deg"}
             </Button>
           </form>
-
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Har du allerede konto?{" "}

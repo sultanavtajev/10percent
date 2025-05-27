@@ -12,11 +12,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/lib/supabase";
-import { Trash2, Eye } from "lucide-react";
+import { TrendingUp, TrendingDown, Eye } from "lucide-react";
 
 interface Measurement {
   id: string;
-  user_id: string;
   body_fat_percentage: number;
   method?: string;
   weight?: number;
@@ -31,72 +30,106 @@ interface Measurement {
   triceps?: number;
   scapular?: number;
   thigh?: number;
-  fett_kg?: number; 
-  fett_kcal?: number; 
-  fett_kg_rest?: number; 
-  fett_kcal_rest?: number; 
-  benmasse?: number; 
-  organer?: number; 
-  muskelmasse?: number; 
+  fett_kg?: number;
+  fett_kcal?: number;
+  fett_kg_rest?: number;
+  fett_kcal_rest?: number;
+  benmasse?: number;
+  organer?: number;
+  muskelmasse?: number;
+  profiles: {
+    first_name: string;
+    last_name: string;
+  };
 }
 
-
-export default function HistoryList() {
+export default function LeaderboardList() {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [sortBy, setSortBy] = useState<"date" | "percentage">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [loading, setLoading] = useState(true);
   const [expandedMeasurement, setExpandedMeasurement] = useState<string | null>(
     null
   );
 
   useEffect(() => {
+    const fetchMeasurements = async () => {
+      setLoading(true);
+
+      let query = supabase
+        .from("measurements")
+        .select(
+          `
+          *,
+          profiles (
+            first_name,
+            last_name
+          )
+        `
+        )
+        .limit(20);
+
+      if (sortBy === "date") {
+        query = query.order("created_at", { ascending: sortOrder === "asc" });
+      } else {
+        query = query.order("body_fat_percentage", {
+          ascending: sortOrder === "asc",
+        });
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Error fetching measurements:", error);
+      } else {
+        setMeasurements(
+          (data || []).map((item) => ({
+            ...item,
+            profiles: (Array.isArray(item.profiles)
+              ? item.profiles[0]
+              : item.profiles) ?? {
+              first_name: "Ukjent",
+              last_name: "",
+            },
+          }))
+        );
+      }
+
+      setLoading(false);
+    };
+
     fetchMeasurements();
-  }, []);
+  }, [sortBy, sortOrder]);
 
-  const fetchMeasurements = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("measurements")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching measurements:", error);
+  const toggleSort = (newSortBy: "date" | "percentage") => {
+    if (sortBy === newSortBy) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setMeasurements(data || []);
-    }
-
-    setLoading(false);
-  };
-
-  const deleteMeasurement = async (id: string) => {
-    if (!confirm("Er du sikker på at du vil slette denne målingen?")) {
-      return;
-    }
-
-    const { error } = await supabase.from("measurements").delete().eq("id", id);
-
-    if (error) {
-      console.error("Error deleting measurement:", error);
-      alert("Feil ved sletting av måling");
-    } else {
-      setMeasurements((prev) => prev.filter((m) => m.id !== id));
+      setSortBy(newSortBy);
+      setSortOrder("desc");
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("no-NO", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    if (!dateString) return "Ukjent dato";
+    const date = new Date(dateString);
+    return isNaN(date.getTime())
+      ? "Ugyldig dato"
+      : date.toLocaleDateString("no-NO", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+  };
+
+  const getDisplayName = (profile: {
+    first_name: string;
+    last_name: string;
+  }) => {
+    const name = `${profile.first_name} ${profile.last_name}`.trim();
+    return name || "Ukjent";
   };
 
   if (loading) {
@@ -110,21 +143,49 @@ export default function HistoryList() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Mine målinger</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>Siste registreringer</CardTitle>
+          <div className="flex space-x-2">
+            <Button
+              variant={sortBy === "date" ? "default" : "outline"}
+              size="sm"
+              onClick={() => toggleSort("date")}
+            >
+              Dato{" "}
+              {sortBy === "date" &&
+                (sortOrder === "desc" ? (
+                  <TrendingDown className="ml-1 h-4 w-4" />
+                ) : (
+                  <TrendingUp className="ml-1 h-4 w-4" />
+                ))}
+            </Button>
+            <Button
+              variant={sortBy === "percentage" ? "default" : "outline"}
+              size="sm"
+              onClick={() => toggleSort("percentage")}
+            >
+              Fettprosent{" "}
+              {sortBy === "percentage" &&
+                (sortOrder === "desc" ? (
+                  <TrendingDown className="ml-1 h-4 w-4" />
+                ) : (
+                  <TrendingUp className="ml-1 h-4 w-4" />
+                ))}
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         {measurements.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">Du har ingen målinger ennå.</p>
-            <Button onClick={() => (window.location.href = "/add")}>
-              Legg til første måling
-            </Button>
+            <p className="text-gray-500 mb-4">Ingen registreringer ennå.</p>
           </div>
         ) : (
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow className="border-b">
+                  <TableHead className="font-semibold border-r">Navn</TableHead>
                   <TableHead className="font-semibold border-r">
                     Kroppsfett
                   </TableHead>
@@ -133,14 +194,21 @@ export default function HistoryList() {
                   </TableHead>
                   <TableHead className="font-semibold border-r">Vekt</TableHead>
                   <TableHead className="font-semibold border-r">Dato</TableHead>
-                  <TableHead className="w-[50px] border-r"></TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {measurements.map((measurement) => (
+                {measurements.map((measurement, index) => (
                   <React.Fragment key={measurement.id}>
                     <TableRow className="border-b">
+                      <TableCell className="border-r">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-500">
+                            #{index + 1}
+                          </span>
+                          <span>{getDisplayName(measurement.profiles)}</span>
+                        </div>
+                      </TableCell>
                       <TableCell className="border-r">
                         {measurement.body_fat_percentage.toFixed(1)}%
                       </TableCell>
@@ -153,7 +221,7 @@ export default function HistoryList() {
                       <TableCell className="text-sm text-muted-foreground border-r">
                         {formatDate(measurement.created_at)}
                       </TableCell>
-                      <TableCell className="border-r">
+                      <TableCell>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -169,79 +237,73 @@ export default function HistoryList() {
                           <Eye className="h-4 w-4" />
                         </Button>
                       </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteMeasurement(measurement.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
                     </TableRow>
                     {expandedMeasurement === measurement.id && (
                       <TableRow className="border-b">
-                        <TableCell colSpan={7} className="bg-gray-50">
+                        <TableCell colSpan={6} className="bg-gray-50">
                           <div className="py-4">
                             <div className="rounded-md border bg-white">
                               <Table>
                                 <TableBody>
                                   <TableRow className="border-b">
-                                    
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Registrert
+                                      Navn
                                     </TableCell>
                                     <TableCell className="border-r" colSpan={2}>
-                                      {formatDate(measurement.created_at)}
+                                      {getDisplayName(measurement.profiles)}
                                     </TableCell>
-
                                     <TableCell className="font-medium border-r bg-gray-100 w-1/4">
-                                      Metode
+                                      Registrert
                                     </TableCell>
                                     <TableCell>
-                                      {measurement.method || "Ikke oppgitt"}
+                                      {formatDate(measurement.created_at)}
                                     </TableCell>
                                   </TableRow>
                                   <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Vekt (kg)
+                                      Metode
                                     </TableCell>
                                     <TableCell className="border-r" colSpan={2}>
+                                      {measurement.method || "Ikke oppgitt"}
+                                    </TableCell>
+                                    <TableCell className="font-medium border-r bg-gray-100">
+                                      Vekt (kg)
+                                    </TableCell>
+                                    <TableCell>
                                       {measurement.weight
                                         ? `${measurement.weight}`
                                         : "Ikke oppgitt"}
                                     </TableCell>
+                                  </TableRow>
+                                  <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100">
                                       Høyde (cm)
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="border-r" colSpan={2}>
                                       {measurement.height
                                         ? `${measurement.height}`
                                         : "Ikke oppgitt"}
                                     </TableCell>
-                                  </TableRow>
-                                  <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100">
                                       Alder (år)
                                     </TableCell>
-                                    <TableCell className="border-r" colSpan={2}>
+                                    <TableCell>
                                       {measurement.age
                                         ? `${measurement.age}`
                                         : "Ikke oppgitt"}
                                     </TableCell>
+                                  </TableRow>
+                                  <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100">
                                       Kjønn
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="border-r" colSpan={2}>
                                       {measurement.gender || "Ikke oppgitt"}
                                     </TableCell>
-                                  </TableRow>
-                                  <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100 w-1/4">
                                       Kroppsfett (%)
                                     </TableCell>
-                                    <TableCell className="border-b" colSpan={2}>
+                                    <TableCell>
                                       {measurement.body_fat_percentage.toFixed(
                                         1
                                       )}
@@ -250,7 +312,7 @@ export default function HistoryList() {
 
                                   <TableRow className="border-b">
                                     <TableCell
-                                      colSpan={7}
+                                      colSpan={5}
                                       className="font-medium bg-blue-50 text-center py-2"
                                     ></TableCell>
                                   </TableRow>
@@ -315,72 +377,72 @@ export default function HistoryList() {
 
                                   <TableRow className="border-b">
                                     <TableCell
-                                      colSpan={7}
+                                      colSpan={5}
                                       className="font-medium bg-blue-50 text-center py-2"
                                     ></TableCell>
                                   </TableRow>
 
                                   <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Bryst (mm)
+                                      Bryst
                                     </TableCell>
                                     <TableCell className="border-r" colSpan={2}>
                                       {measurement.chest
-                                        ? `${measurement.chest}`
+                                        ? `${measurement.chest} mm`
                                         : "Ikke målt"}
                                     </TableCell>
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Mage (mm)
+                                      Mage
                                     </TableCell>
                                     <TableCell>
                                       {measurement.abdomen
-                                        ? `${measurement.abdomen}`
+                                        ? `${measurement.abdomen} mm`
                                         : "Ikke målt"}
                                     </TableCell>
                                   </TableRow>
                                   <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Hofte (mm)
+                                      Hofte
                                     </TableCell>
                                     <TableCell className="border-r" colSpan={2}>
                                       {measurement.hip
-                                        ? `${measurement.hip}`
+                                        ? `${measurement.hip} mm`
                                         : "Ikke målt"}
                                     </TableCell>
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Midtaksillær (mm)
+                                      Midtaksillær
                                     </TableCell>
                                     <TableCell>
                                       {measurement.midaxillary
-                                        ? `${measurement.midaxillary}`
+                                        ? `${measurement.midaxillary} mm`
                                         : "Ikke målt"}
                                     </TableCell>
                                   </TableRow>
                                   <TableRow className="border-b">
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Triceps (mm)
+                                      Triceps
                                     </TableCell>
                                     <TableCell className="border-r" colSpan={2}>
                                       {measurement.triceps
-                                        ? `${measurement.triceps}`
+                                        ? `${measurement.triceps} mm`
                                         : "Ikke målt"}
                                     </TableCell>
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Skulderblad (mm)
+                                      Skulderblad
                                     </TableCell>
                                     <TableCell>
                                       {measurement.scapular
-                                        ? `${measurement.scapular}`
+                                        ? `${measurement.scapular} mm`
                                         : "Ikke målt"}
                                     </TableCell>
                                   </TableRow>
                                   <TableRow>
                                     <TableCell className="font-medium border-r bg-gray-100">
-                                      Lår (mm)
+                                      Lår
                                     </TableCell>
                                     <TableCell colSpan={2}>
                                       {measurement.thigh
-                                        ? `${measurement.thigh}`
+                                        ? `${measurement.thigh} mm`
                                         : "Ikke målt"}
                                     </TableCell>
                                     <TableCell></TableCell>

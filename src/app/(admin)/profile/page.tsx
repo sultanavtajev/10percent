@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import HistoryList from "@/components/HistoryList";
 import type { User } from "@supabase/supabase-js";
+import ProfileForm from "@/components/ProfileForm";
+import MeasurementHistory from "@/components/MeasurementHistory";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -21,7 +23,6 @@ export default function ProfilePage() {
       }
       setLoading(false);
     };
-
     checkUser();
   }, [router]);
 
@@ -39,12 +40,18 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Min profil</h1>
-        <p className="text-lg text-gray-600">{user.email}</p>
+      {/* ProfileForm-komponenten */}
+      <ProfileForm user={user} />
+
+      <div className="mt-8">
+        {/* HistoryList komponent */}
+        <HistoryList />
       </div>
 
-      <HistoryList />
+      <div className="mt-8">
+        {/* Measurement History komponent */}
+        <MeasurementHistory userId={user.id} />
+      </div>
     </div>
   );
 }

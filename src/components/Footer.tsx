@@ -1,20 +1,52 @@
+"use client";
+
+import React from "react";
 import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-50 border-t">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          <div className="text-gray-600">
-            <p>&copy; 2024 10percent.no. Alle rettigheter reservert.</p>
-          </div>
-          <div className="flex space-x-6">
-            <Link href="/about" className="text-gray-600 hover:text-gray-900">
-              Om oss
-            </Link>
-          </div>
-        </div>
-      </div>
+    <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+      <p className="text-xs text-muted-foreground">
+        &copy; 2024 Developia AS. Alle rettigheter reservert.
+      </p>
+      <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+        <Link
+          href="/guide"
+          className="text-xs hover:underline underline-offset-4"
+          prefetch={false}
+        >
+          Guide
+        </Link>
+        <Link
+          href="/kontakt"
+          className="text-xs hover:underline underline-offset-4"
+          prefetch={false}
+        >
+          Kontakt
+        </Link>
+        <Link
+          href="/about"
+          className="text-xs hover:underline underline-offset-4"
+          prefetch={false}
+        >
+          Om 10percent
+        </Link>
+        <Link
+          href="/brukervilkar"
+          className="text-xs hover:underline underline-offset-4"
+          prefetch={false}
+        >
+          Brukervilkår
+        </Link>
+        <Link
+          href="/personvern"
+          className="text-xs hover:underline underline-offset-4"
+          prefetch={false}
+        >
+          Personvern
+        </Link>
+      </nav>
     </footer>
   );
 }
+

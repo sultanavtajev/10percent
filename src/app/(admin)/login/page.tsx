@@ -1,21 +1,13 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signIn } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,12 +21,26 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const { error } = await signIn(email, password);
+    const { data, error } = await signIn(email, password);
 
     if (error) {
       setError(error.message);
     } else {
-      router.push("/");
+      // Etter suksessfull pålogging, sjekk om profilen er utfylt
+      const { user } = data;
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (profileError || !profileData) {
+        // Profil mangler, redirect til /profile
+        router.push("/profile");
+      } else {
+        // Profil finnes, redirect til hovedside
+        router.push("/");
+      }
     }
 
     setLoading(false);
@@ -45,9 +51,6 @@ export default function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle>Logg inn</CardTitle>
-          <CardDescription>
-            Logg inn for å registrere dine målinger
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,15 +82,6 @@ export default function LoginPage() {
               {loading ? "Logger inn..." : "Logg inn"}
             </Button>
           </form>
-
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
-              Har du ikke konto?{" "}
-              <Link href="/register" className="text-blue-600 hover:underline">
-                Registrer deg her
-              </Link>
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
