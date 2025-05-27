@@ -12,7 +12,8 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [recovery, setRecovery] = useState(false); // Styrer om skjema vises
+  const [recovery, setRecovery] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,15 +21,27 @@ export default function ResetPasswordPage() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
-        setRecovery(true); // Kun i recovery-modus tillates skjemaet
-      } else {
-        // Ikke recovery – redirect til login eller forside
-        router.push("/login");
+        setRecovery(true);
+      }
+      setInitialized(true);
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        setInitialized(true);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [router]);
+
+  // 🔥 Legg til separat useEffect for redirect ved ugyldig lenke
+  useEffect(() => {
+    if (initialized && !recovery) {
+      const timeout = setTimeout(() => router.push("/login"), 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [initialized, recovery, router]);
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,20 +54,28 @@ export default function ResetPasswordPage() {
     if (error) {
       setError(error.message);
     } else {
-      setMessage("Passordet er oppdatert. Du vil bli logget ut for sikkerhet.");
+      setMessage("Passordet er oppdatert. Du vil bli logget ut.");
       setTimeout(async () => {
-        await supabase.auth.signOut(); // 🔥 Logg ut for å sikre ny innlogging
-        router.push("/login"); // Send til login
+        await supabase.auth.signOut();
+        router.push("/login");
       }, 3000);
     }
 
     setLoading(false);
   };
 
+  if (!initialized) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Laster...</p>
+      </div>
+    );
+  }
+
   if (!recovery) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p>Laster eller omdirigerer...</p>
+        <p>Ikke gyldig lenke. Omdirigerer...</p>
       </div>
     );
   }
