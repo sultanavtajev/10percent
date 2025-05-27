@@ -7,7 +7,7 @@ export default function Home() {
       <section className="relative w-full h-screen">
         {/* Video Background */}
         <video
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover object-left"
           src="/10v.mp4"
           autoPlay
           loop
@@ -22,7 +22,8 @@ export default function Home() {
         <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-6">
           <div className="max-w-4xl space-y-8">
             <h1 className="text-4xl md:text-6xl font-light text-white tracking-tight">
-              Spor din <span className="font-medium text-white/">fettprosent</span>
+              Spor din{" "}
+              <span className="font-medium text-white/">fettprosent</span>
             </h1>
 
             <p className="text-lg md:text-xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed drop-shadow-md">
