@@ -90,8 +90,20 @@ const measurementFields: MeasurementField[] = [
     color: "hsl(var(--chart-1))",
   },
   {
+    key: "fett_kg_rest",
+    label: "Fett kg rest (kg)",
+    unit: "kg",
+    color: "hsl(var(--chart-2))",
+  },
+  {
     key: "fett_kcal",
     label: "Fett (kcal)",
+    unit: "kcal",
+    color: "hsl(var(--chart-2))",
+  },
+  {
+    key: "fett_kcal_rest",
+    label: "Fett kcal rest(kcal)",
     unit: "kcal",
     color: "hsl(var(--chart-2))",
   },
@@ -297,7 +309,6 @@ export default function MeasurementHistory({
           </div>
         </CardContent>
       </Card>
-
     </div>
   );
 }
