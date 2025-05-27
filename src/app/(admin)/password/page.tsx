@@ -19,7 +19,7 @@ export default function Komponent() {
     setError("");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/passwordreset`, // Sett korrekt URL
+      redirectTo: `${window.location.origin}/passwordreset`,
     });
 
     if (error) {
