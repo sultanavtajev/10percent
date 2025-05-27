@@ -1,4 +1,4 @@
-"use client"; // Dette markerer at komponenten kjører på klientsiden
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
+import { InfoDialog } from "@/components/InfoDialog";
 
 export default function FatPercentageForm() {
   const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ export default function FatPercentageForm() {
     gender: "",
     height: "",
     weight: "",
-    fat_goal: "", // 🔥 Legger til fettprosentmål
+    fat_goal: "",
     chest: "",
     abdomen: "",
     hip: "",
@@ -172,7 +173,7 @@ export default function FatPercentageForm() {
     });
 
     if (error) {
-      console.error("Error saving measurement:", error);
+      console.error("Feil ved lagring av måling:", error);
       alert("Feil ved lagring av måling");
     } else {
       router.push("/profile");
@@ -199,15 +200,42 @@ export default function FatPercentageForm() {
     formData.scapular &&
     formData.thigh;
 
+  const fieldLabels: { [key: string]: string } = {
+    chest: "Bryst (mm)",
+    abdomen: "Mage (mm)",
+    hip: "Hofte (mm)",
+    midaxillary: "Midtaksillær (mm)",
+    triceps: "Triceps (mm)",
+    scapular: "Skulderblad (mm)",
+    thigh: "Lår (mm)",
+  };
+
+  const fieldDescriptions: { [key: string]: string } = {
+    chest: "Mål tykkelsen av hudfolden på brystet med kaliper.",
+    abdomen: "Mål tykkelsen av hudfolden rett ved navlen.",
+    hip: "Mål tykkelsen av hudfolden over hoften.",
+    midaxillary: "Mål tykkelsen av hudfolden rett under armhulen.",
+    triceps: "Mål tykkelsen av hudfolden bak overarmen.",
+    scapular: "Mål tykkelsen av hudfolden under skulderbladet.",
+    thigh: "Mål tykkelsen av hudfolden midt på låret.",
+  };
+
   return (
-    <Card>
+    <div className="space-y-6">
+    <Card >
       <CardHeader>
         <CardTitle>Fettprosent kalkulator</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="gender">Kjønn</Label>
+            <Label htmlFor="gender" className="flex items-center mb-2">
+              Kjønn
+              <InfoDialog
+                title="Kjønn"
+                description="Basert på din profil. Kan ikke endres her."
+              />
+            </Label>
             <Select
               value={formData.gender}
               disabled
@@ -223,15 +251,33 @@ export default function FatPercentageForm() {
             </Select>
           </div>
           <div>
-            <Label htmlFor="age">Alder</Label>
+            <Label htmlFor="age" className="flex items-center mb-2">
+              Alder (år)
+              <InfoDialog
+                title="Alder (år)"
+                description="Din alder er hentet fra profilen."
+              />
+            </Label>
             <Input id="age" type="number" value={formData.age} disabled />
           </div>
           <div>
-            <Label htmlFor="height">Høyde (cm)</Label>
+            <Label htmlFor="height" className="flex items-center mb-2">
+              Høyde (cm)
+              <InfoDialog
+                title="Høyde (cm)"
+                description="Høyde fra profilen din. Kan ikke endres her."
+              />
+            </Label>
             <Input id="height" type="number" value={formData.height} disabled />
           </div>
           <div>
-            <Label htmlFor="weight">Vekt (kg)</Label>
+            <Label htmlFor="weight" className="flex items-center mb-2">
+              Vekt (kg)
+              <InfoDialog
+                title="Vekt (kg)"
+                description="Skriv inn vekten din i kg."
+              />
+            </Label>
             <Input
               id="weight"
               type="number"
@@ -240,23 +286,21 @@ export default function FatPercentageForm() {
               onChange={(e) => handleInputChange("weight", e.target.value)}
             />
           </div>
-          {[
-            { label: "Bryst (mm)", id: "chest" },
-            { label: "Mage (mm)", id: "abdomen" },
-            { label: "Hofte (mm)", id: "hip" },
-            { label: "Midaxillary (mm)", id: "midaxillary" },
-            { label: "Triceps (mm)", id: "triceps" },
-            { label: "Skulderblad (mm)", id: "scapular" },
-            { label: "Lår (mm)", id: "thigh" },
-          ].map((field) => (
-            <div key={field.id}>
-              <Label htmlFor={field.id}>{field.label}</Label>
+          {Object.entries(fieldLabels).map(([id, label]) => (
+            <div key={id}>
+              <Label htmlFor={id} className="flex items-center mb-2">
+                {label}
+                <InfoDialog
+                  title={`${label}`}
+                  description={fieldDescriptions[id]}
+                />
+              </Label>
               <Input
-                id={field.id}
+                id={id}
                 type="number"
-                placeholder={field.label}
-                value={formData[field.id as keyof typeof formData]}
-                onChange={(e) => handleInputChange(field.id, e.target.value)}
+                placeholder={label}
+                value={formData[id as keyof typeof formData]}
+                onChange={(e) => handleInputChange(id, e.target.value)}
               />
             </div>
           ))}
@@ -274,7 +318,7 @@ export default function FatPercentageForm() {
               </Button>
             </div>
 
-            {result !== null && (
+            {result && (
               <div className="text-center space-y-4">
                 <div className="p-6 bg-blue-50 rounded-lg">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -305,5 +349,6 @@ export default function FatPercentageForm() {
         )}
       </CardContent>
     </Card>
+    </div>
   );
 }

@@ -140,92 +140,94 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   }
 
   return (
-    <Card className="relative">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setIsEditable(!isEditable)}
-        className="absolute top-4 right-4"
-      >
-        {isEditable ? <Lock size={20} /> : <Pencil size={20} />}
-      </Button>
+    <div className="space-y-6">
+      <Card className="relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsEditable(!isEditable)}
+          className="absolute top-4 right-4 border border-gray-300 rounded-md hover:border-gray-500"
+        >
+          {isEditable ? <Lock size={20} /> : <Pencil size={20} />}
+        </Button>
 
-      <CardHeader>
-        <CardTitle>Fyll ut profilinformasjon</CardTitle>
-      </CardHeader>
+        <CardHeader>
+          <CardTitle>Fyll ut profilinformasjon</CardTitle>
+        </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="gender">Kjønn</Label>
-            <Select
-              value={formData.gender}
-              onValueChange={(value) => handleInputChange("gender", value)}
-              disabled={!isEditable} // Disabled for Select
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Velg kjønn" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Mann">Mann</SelectItem>
-                <SelectItem value="Kvinne">Kvinne</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {[
-            { label: "Fornavn", id: "first_name", placeholder: "f.eks. Ola" },
-            {
-              label: "Etternavn",
-              id: "last_name",
-              placeholder: "f.eks. Nordmann",
-            },
-            { label: "Alder", id: "age", placeholder: "f.eks. 25" },
-            { label: "Høyde (cm)", id: "height", placeholder: "f.eks. 175" },
-            { label: "Vekt (kg)", id: "weight", placeholder: "f.eks. 70" },
-            {
-              label: "Fettprosent-mål (%)",
-              id: "fat_goal",
-              placeholder: "f.eks. 20",
-            },
-            {
-              label: "Vekt-mål (kg)",
-              id: "weight_goal",
-              placeholder: "f.eks. 65",
-            },
-          ].map((field) => (
-            <div key={field.id}>
-              <Label htmlFor={field.id}>{field.label}</Label>
-              <Input
-                id={field.id}
-                type={
-                  field.id.includes("goal") ||
-                  field.id === "age" ||
-                  field.id === "height" ||
-                  field.id === "weight"
-                    ? "number"
-                    : "text"
-                }
-                placeholder={field.placeholder}
-                value={formData[field.id as keyof typeof formData]}
-                onChange={(e) => handleInputChange(field.id, e.target.value)}
-                disabled={!isEditable} // Disabled for Input
-              />
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="gender">Kjønn</Label>
+              <Select
+                value={formData.gender}
+                onValueChange={(value) => handleInputChange("gender", value)}
+                disabled={!isEditable} // Disabled for Select
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Velg kjønn" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mann">Mann</SelectItem>
+                  <SelectItem value="Kvinne">Kvinne</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          ))}
-        </div>
 
-        {isEditable && (
-          <div className="flex justify-center">
-            <Button
-              onClick={handleSaveProfile}
-              disabled={!isFormValid || saving}
-            >
-              {saving ? "Lagrer..." : "Lagre profil"}
-            </Button>
+            {[
+              { label: "Fornavn", id: "first_name", placeholder: "f.eks. Ola" },
+              {
+                label: "Etternavn",
+                id: "last_name",
+                placeholder: "f.eks. Nordmann",
+              },
+              { label: "Alder", id: "age", placeholder: "f.eks. 25" },
+              { label: "Høyde (cm)", id: "height", placeholder: "f.eks. 175" },
+              { label: "Vekt (kg)", id: "weight", placeholder: "f.eks. 70" },
+              {
+                label: "Fettprosent-mål (%)",
+                id: "fat_goal",
+                placeholder: "f.eks. 20",
+              },
+              {
+                label: "Vekt-mål (kg)",
+                id: "weight_goal",
+                placeholder: "f.eks. 65",
+              },
+            ].map((field) => (
+              <div key={field.id}>
+                <Label htmlFor={field.id}>{field.label}</Label>
+                <Input
+                  id={field.id}
+                  type={
+                    field.id.includes("goal") ||
+                    field.id === "age" ||
+                    field.id === "height" ||
+                    field.id === "weight"
+                      ? "number"
+                      : "text"
+                  }
+                  placeholder={field.placeholder}
+                  value={formData[field.id as keyof typeof formData]}
+                  onChange={(e) => handleInputChange(field.id, e.target.value)}
+                  disabled={!isEditable} // Disabled for Input
+                />
+              </div>
+            ))}
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          {isEditable && (
+            <div className="flex justify-center">
+              <Button
+                onClick={handleSaveProfile}
+                disabled={!isFormValid || saving}
+              >
+                {saving ? "Lagrer..." : "Lagre profil"}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

@@ -232,7 +232,7 @@ export default function LeaderboardList() {
                                 : measurement.id
                             )
                           }
-                          className="text-gray-600 hover:text-gray-700"
+                          className="text-gray-600 hover:text-gray-700 border border-gray-300 rounded-md hover:border-gray-500"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
