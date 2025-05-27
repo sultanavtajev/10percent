@@ -2,7 +2,7 @@
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-12 md:py-16 lg:py-24">
+    <div className="container mx-auto max-w-3xl px-4 py-12 md:py-16 lg:py-24 pt-24">
       <div className="space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">

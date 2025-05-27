@@ -2,7 +2,7 @@
 
 export default function Komponent() {
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20">
+    <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20 pt-24">
       <div className="space-y-8">
         <div className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">
@@ -90,7 +90,6 @@ export default function Komponent() {
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   );

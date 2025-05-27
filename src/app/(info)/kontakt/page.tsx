@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 export default function KontaktOss() {
   return (
     <div>
-      <div className="w-full max-w-4xl mx-auto py-12 md:py-16 px-4 md:px-6">
+      <div className="w-full max-w-4xl mx-auto py-12 md:py-16 px-4 md:px-6 pt-24">
         <div className="space-y-4 text-center">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Kontakt oss – 10percent

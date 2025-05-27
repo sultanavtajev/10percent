@@ -2,7 +2,7 @@
 
 export default function Komponent() {
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20">
+    <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20 pt-24">
       <div className="space-y-6">
         <h1 className="text-3xl md:text-4xl font-bold">Personvernserklæring</h1>
         <p className="text-muted-foreground text-lg md:text-xl">
