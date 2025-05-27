@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ import {
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const getUser = async () => {
@@ -38,10 +40,11 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await signOut();
+    router.push("/");
   };
 
   return (
-    <header className="px-4 lg:px-6 h-14 flex items-center">
+    <header className="absolute top-0 left-0 w-full z-50 px-4 lg:px-6 h-14 flex items-center bg-transparent">
       <Link
         href="/"
         className="flex items-center justify-center"

@@ -48,7 +48,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto py-16 px-4">
+    <div className="max-w-md mx-auto py-16 px-4 pt-24">
       <Card>
         <CardHeader>
           <CardTitle>Registrer deg</CardTitle>
