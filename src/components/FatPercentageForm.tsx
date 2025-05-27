@@ -118,7 +118,7 @@ export default function FatPercentageForm() {
       ? (fettKg / fettProsent) * (fettProsent - fatGoal)
       : null;
     const fettKcalRest = fettKgRest ? fettKgRest * 7700 : null;
-    const benmasse = gender === "male" ? 0.15 * weight : 0.12 * weight;
+    const benmasse = gender === "Mann" ? 0.15 * weight : 0.12 * weight;
     const organer = 0.09 * weight;
     const muskelmasse = weight - fettKg - benmasse;
 
