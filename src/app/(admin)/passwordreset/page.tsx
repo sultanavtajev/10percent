@@ -12,19 +12,22 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [recovery, setRecovery] = useState(false); // 🔥 Legg til recovery-status
+  const [recovery, setRecovery] = useState(false); // Styrer om skjema vises
   const router = useRouter();
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
-        setRecovery(true);
-      } else if (session) {
-        router.push("/");
+        setRecovery(true); // Kun i recovery-modus tillates skjemaet
+      } else {
+        // Ikke recovery – redirect til login eller forside
+        router.push("/login");
       }
     });
 
-    return () => data?.subscription?.unsubscribe(); // 🔥 Løsningen
+    return () => subscription.unsubscribe();
   }, [router]);
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -38,9 +41,10 @@ export default function ResetPasswordPage() {
     if (error) {
       setError(error.message);
     } else {
-      setMessage("Passordet er oppdatert. Du vil bli logget inn automatisk.");
-      setTimeout(() => {
-        router.push("/"); // Eller router.push("/login") hvis ønskelig
+      setMessage("Passordet er oppdatert. Du vil bli logget ut for sikkerhet.");
+      setTimeout(async () => {
+        await supabase.auth.signOut(); // 🔥 Logg ut for å sikre ny innlogging
+        router.push("/login"); // Send til login
       }, 3000);
     }
 
@@ -48,10 +52,9 @@ export default function ResetPasswordPage() {
   };
 
   if (!recovery) {
-    // 🔒 Ikke recovery – vis loading eller redirecter
     return (
       <div className="flex items-center justify-center h-screen">
-        <p>Laster...</p>
+        <p>Laster eller omdirigerer...</p>
       </div>
     );
   }
