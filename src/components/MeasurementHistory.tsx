@@ -103,7 +103,7 @@ const measurementFields: MeasurementField[] = [
   },
   {
     key: "fett_kcal_rest",
-    label: "Fett kcal rest(kcal)",
+    label: "Fett kcal rest (kcal)",
     unit: "kcal",
     color: "hsl(var(--chart-2))",
   },
